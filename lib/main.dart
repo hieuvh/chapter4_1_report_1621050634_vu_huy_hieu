@@ -1,35 +1,54 @@
+/// Send data to a new screen
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(HeroApp());
+class Todo {
+  final String title;
+  final String description;
 
-class HeroApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Transition Demo',
-      home: MainScreen(),
-    );
-  }
+  Todo(this.title, this.description);
 }
 
-class MainScreen extends StatelessWidget {
+void main() {
+  runApp(MaterialApp(
+    title: 'Passing Data',
+    home: TodosScreen(
+      todos: List.generate(
+        20,
+        (i) => Todo(
+          'Todo $i',
+          'A description of what needs to be done for Todo $i',
+        ),
+      ),
+    ),
+  ));
+}
+
+class TodosScreen extends StatelessWidget {
+  final List<Todo> todos;
+
+  TodosScreen({Key key, @required this.todos}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Main Screen'),
+        title: Text('Todos'),
       ),
-      body: GestureDetector(
-        child: Hero(
-          tag: 'imageHero',
-          child: Image.network(
-            'https://www.chotot.com/kinhnghiem/wp-content/uploads/2019/08/cho-husky-07-e1566459272208.jpg',
-          ),
-        ),
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) {
-            return DetailScreen();
-          }));
+      body: ListView.builder(
+        itemCount: todos.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(todos[index].title),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailScreen(todo: todos[index]),
+                ),
+              );
+            },
+          );
         },
       ),
     );
@@ -37,21 +56,18 @@ class MainScreen extends StatelessWidget {
 }
 
 class DetailScreen extends StatelessWidget {
+  final Todo todo;
+
+  DetailScreen({Key key, @required this.todo}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        child: Center(
-          child: Hero(
-            tag: 'imageHero',
-            child: Image.network(
-              'https://www.chotot.com/kinhnghiem/wp-content/uploads/2019/08/cho-husky-07-e1566459272208.jpg',
-            ),
-          ),
-        ),
-        onTap: () {
-          Navigator.pop(context);
-        },
+      appBar: AppBar(
+        title: Text(todo.title),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text(todo.description),
       ),
     );
   }
